@@ -94,4 +94,7 @@ fabric.properties
 config.json
 vk_config.v2.json
 
+# other file
+check list.md
+
 # End of https://www.gitignore.io/api/pycharm
