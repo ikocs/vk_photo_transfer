@@ -89,6 +89,8 @@ class Mover:
         return select_photos
 
     def move(self):
+        moved_qty = 0
+        not_moved_qty = 0
         for photo in self.select_photos:
             move_status = False
             for album in self.albums:
@@ -104,3 +106,10 @@ class Mover:
             if not move_status:
                 print('Не найден альбом для переноса для фото id: '
                       'https://vk.com/photo{}_{}'.format(self.group_id, photo['id']))
+                not_moved_qty += 1
+            else:
+                moved_qty += 1
+
+        print('Перенесено фотографий: {} шт. \n'
+              'Не перенесено фотографий: {} шт.'
+              .format(moved_qty, not_moved_qty))
