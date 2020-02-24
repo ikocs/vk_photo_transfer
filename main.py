@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import vk_api
 import json
 from mover import Mover
@@ -33,7 +34,7 @@ def vk_auth(login, password, token):
 def main():
     """Основная логика работы скрипта"""
 
-    with open("config.json", "r") as file:
+    with open("config.json", "r", encoding="utf-8") as file:
         config = json.load(file)
 
     login = config['login']
