@@ -1,4 +1,5 @@
 import re
+import logging
 
 
 class Mover:
@@ -10,6 +11,8 @@ class Mover:
         self.photos = self.get_photos()
         self.photos_id = self.get_photos_id()
         self.select_photos = self.find_select_photo()
+
+        self.logger = logging.getLogger('mover')
 
         self.move()
 
@@ -100,22 +103,28 @@ class Mover:
     def move(self):
         moved_qty = 0
         not_moved_qty = 0
+        move_status = False
+
         for photo in self.select_photos:
             photo_title = photo['trans_album']
-            vk_response = self.vk.method('photos.move', {
-                        'owner_id': self.group_id,
-                        'target_album_id': self.id_albums_dict[photo_title],
-                        'photo_id': photo['id']
-                    })
-            move_status = bool(vk_response)
+            try:
+                vk_response = self.vk.method('photos.move', {
+                    'owner_id': self.group_id,
+                    'target_album_id': self.id_albums_dict[photo_title],
+                    'photo_id': photo['id']
+                })
+                move_status = bool(vk_response)
+            except KeyError:
+                logging.error('Не найден альбом с названием '
+                              '"{name}"'.format(name=photo_title))
 
             if not move_status:
-                print('Не найден альбом для переноса для фото id: '
-                      'https://vk.com/photo{}_{}'.format(self.group_id, photo['id']))
+                self.logger.error('Не найден альбом для переноса для фото id: '
+                              'https://vk.com/photo{}_{}'.format(self.group_id, photo['id']))
                 not_moved_qty += 1
             else:
                 moved_qty += 1
 
-        print('Перенесено фотографий: {} шт. \n'
-              'Не перенесено фотографий: {} шт.'
-              .format(moved_qty, not_moved_qty))
+        self.logger.debug('Перенесено фотографий: {} шт.'.format(moved_qty))
+        self.logger.debug('Не перенесено фотографий: {} шт.'.format(not_moved_qty))
+
