@@ -120,7 +120,7 @@ class Mover:
 
             if not move_status:
                 self.logger.error('Не найден альбом для переноса для фото id: '
-                              'https://vk.com/photo{}_{}'.format(self.group_id, photo['id']))
+                                  'https://vk.com/photo{}_{}'.format(self.group_id, photo['id']))
                 not_moved_qty += 1
             else:
                 moved_qty += 1

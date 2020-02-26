@@ -96,5 +96,6 @@ vk_config.v2.json
 
 # other file
 check list.md
+*.log
 
 # End of https://www.gitignore.io/api/pycharm
