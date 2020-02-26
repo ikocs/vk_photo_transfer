@@ -6,6 +6,7 @@ class Mover:
         self.vk = vk
         self.group_id = group_id
         self.albums = self.get_albums()
+        self.id_albums_dict = self.make_id_albums_dict()
         self.photos = self.get_photos()
         self.photos_id = self.get_photos_id()
         self.select_photos = self.find_select_photo()
@@ -19,6 +20,14 @@ class Mover:
         })
 
         return albums['items']
+
+    def make_id_albums_dict(self):
+        """Составляет словарь {название альбома:id альбома}"""
+        ids_dict = dict()
+        for album in self.albums:
+            ids_dict.setdefault(album['title'], album['id'])
+
+        return ids_dict
 
     def get_sort_album(self):
         """Ищет альбом для отбора фотографий для переноса"""
@@ -92,16 +101,13 @@ class Mover:
         moved_qty = 0
         not_moved_qty = 0
         for photo in self.select_photos:
-            move_status = False
-            for album in self.albums:
-                if photo['trans_album'] == album['title']:
-                    status_dict = self.vk.method('photos.move', {
+            photo_title = photo['trans_album']
+            vk_response = self.vk.method('photos.move', {
                         'owner_id': self.group_id,
-                        'target_album_id': album['id'],
+                        'target_album_id': self.id_albums_dict[photo_title],
                         'photo_id': photo['id']
                     })
-                    move_status = bool(status_dict)
-                    break
+            move_status = bool(vk_response)
 
             if not move_status:
                 print('Не найден альбом для переноса для фото id: '
