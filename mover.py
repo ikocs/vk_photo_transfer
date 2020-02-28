@@ -1,5 +1,6 @@
 import re
 import logging
+import vk_api.exceptions
 
 
 class Mover:
@@ -117,6 +118,8 @@ class Mover:
             except KeyError:
                 logging.error('Не найден альбом с названием '
                               '"{name}"'.format(name=photo_title))
+            except vk_api.exceptions.ApiError:
+                logging.error('API VK ERROR')
 
             if not move_status:
                 self.logger.error('Не найден альбом для переноса для фото id: '
