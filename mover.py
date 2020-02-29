@@ -47,7 +47,8 @@ class Mover:
         album_id = self.get_sort_album()
         photos = self.vk.method('photos.get', {
             'owner_id': self.group_id,
-            'album_id': album_id
+            'album_id': album_id,
+            'count': 1000
         })
 
         return photos
