@@ -3,6 +3,17 @@ import logging
 import vk_api.exceptions
 
 
+def config_logger(logger):
+    logger.setLevel(logging.DEBUG)
+    f_handler = logging.FileHandler(filename="photo transfer.log",
+                                    mode='w')
+
+    formatter = logging.Formatter('%(asctime)s - %(filename)s - %(levelname)s - %(message)s')
+    f_handler.setFormatter(formatter)
+
+    logger.addHandler(f_handler)
+
+
 class Mover:
     def __init__(self, vk, group_id):
         self.vk = vk
@@ -13,7 +24,8 @@ class Mover:
         self.photos_id = self.get_photos_id()
         self.select_photos = self.find_select_photo()
 
-        self.logger = logging.getLogger('mover')
+        self.logger = logging.getLogger('__name__')
+        config_logger(self.logger)
 
         self.move()
 
