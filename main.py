@@ -2,14 +2,6 @@
 import vk_api
 import json
 from mover import Mover
-import logging
-
-logging.basicConfig(
-    filename='photo transfer.log',
-    filemode='w',
-    format='%(asctime)s - %(filename)s - %(levelname)s - %(message)s',
-    level=logging.DEBUG
-)
 
 
 def auth_handler():
@@ -53,7 +45,7 @@ def main():
     vk_session = vk_auth(login, password, token)
 
     move = Mover(vk_session, group_id)
-    logging.debug('Перенос завершен')
+    # logging.debug('Перенос завершен')
 
 
 if __name__ == '__main__':
