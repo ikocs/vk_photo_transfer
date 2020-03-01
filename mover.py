@@ -69,7 +69,7 @@ class Mover:
             True, текст комментария - если фото подходит
             False, None - если не подходит
         """
-        for com in ph_comments['items']:
+        for com in ph_comments:
             if com['from_id'] == self.group_id:
                 return True, com['text']
         return False, None
@@ -84,13 +84,20 @@ class Mover:
         """
         select_photos = []
         for id in self.photos_id:
-            ph_comments = self.vk.method('photos.getComments',
-                                    {
-                                        'owner_id': self.group_id,
-                                        'photo_id': id,
-                                        'sort': 'desc'  # от старых к новым
-                                    })
+            json_comments = self.vk.method('photos.getComments',
+                                           {
+                                               'owner_id': self.group_id,
+                                               'photo_id': id,
+                                               'sort': 'desc',  # сортировка от старых к новым
+                                               'count': 3
+                                           })
+            # Пропускаем проверки, если комментариев к фото нет
+            if json_comments['count'] == 0:
+                continue
+
+            ph_comments = json_comments['items']
             status, text = self.photo_check(ph_comments)
+
             if status:
                 trans_album = re.findall(r'«(.*)»', text)
                 select_photos.append(dict(
