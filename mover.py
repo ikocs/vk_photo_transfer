@@ -20,6 +20,9 @@ class Mover:
         self.group_id = group_id
         self.albums = self.get_albums()
         self.id_albums_dict = self.make_id_albums_dict()
+        self.select_album = self.get_sort_album()
+        self.load_album_comments()
+
         self.photos = self.get_photos()
         self.photos_id = self.get_photos_id()
         self.select_photos = self.find_select_photo()
@@ -56,10 +59,9 @@ class Mover:
 
     def get_photos(self):
         """Получает словарь с данными фото в сортируемом альбом"""
-        album_id = self.get_sort_album()
         photos = self.vk.method('photos.get', {
             'owner_id': self.group_id,
-            'album_id': album_id,
+            'album_id': self.select_album,
             'count': 1000
         })
 
@@ -85,6 +87,36 @@ class Mover:
             if com['from_id'] == self.group_id:
                 return True, com['text']
         return False, None
+
+    def load_album_comments(self):
+        comment_count = self.vk.method(
+            'photos.getAllComments',
+            {
+                'owner_id': self.group_id,
+                'album_id': self.select_album
+            }
+        )['count']
+
+        offset = 0
+        album_comments = []
+        while comment_count > 0:
+            if comment_count >= 100:
+                gets_count = 100
+            else:
+                gets_count = comment_count
+
+            album_comments.append(self.vk.method(
+                'photos.getAllComments',
+                {
+                    'owner_id': self.group_id,
+                    'album_id': self.select_album,
+                    'count': gets_count,
+                    'offset': offset
+                }
+            )['items'])
+
+            offset = gets_count
+            comment_count -= gets_count
 
     def find_select_photo(self):
         """
