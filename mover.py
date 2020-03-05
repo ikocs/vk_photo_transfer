@@ -1,6 +1,7 @@
 import re
 import logging
 import vk_api.exceptions
+from vk_api.tools import VkTools
 
 
 def config_logger(logger):
@@ -89,36 +90,16 @@ class Mover:
         return False, None
 
     def load_album_comments(self):
-        comment_count = self.vk.method(
-            'photos.getAllComments',
-            {
-                'owner_id': self.group_id,
-                'album_id': self.select_album
-            }
-        )['count']
+        tools = VkTools(self.vk)
+        params = {
+            'owner_id': self.group_id,
+            'album_id': self.select_album
+        }
+        comments = tools.get_all(method='photos.getAllComments',
+                                 max_count=100,
+                                 values=params)
 
-        offset = 0
-        album_comments = []
-        while comment_count > 0:
-            if comment_count >= 100:
-                gets_count = 100
-            else:
-                gets_count = comment_count
-
-            album_comments.append(self.vk.method(
-                'photos.getAllComments',
-                {
-                    'owner_id': self.group_id,
-                    'album_id': self.select_album,
-                    'count': gets_count,
-                    'offset': offset
-                }
-            )['items'])
-
-            offset = gets_count
-            comment_count -= gets_count
-
-        return album_comments
+        return comments
 
     def find_select_photo(self):
         """
