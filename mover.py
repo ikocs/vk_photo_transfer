@@ -21,7 +21,7 @@ class Mover:
         self.albums = self.get_albums()
         self.id_albums_dict = self.make_id_albums_dict()
         self.select_album = self.get_sort_album()
-        self.load_album_comments()
+        self.album_comments = self.load_album_comments()
 
         self.photos = self.get_photos()
         self.photos_id = self.get_photos_id()
@@ -117,6 +117,8 @@ class Mover:
 
             offset = gets_count
             comment_count -= gets_count
+
+        return album_comments
 
     def find_select_photo(self):
         """
