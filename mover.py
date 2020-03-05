@@ -19,9 +19,11 @@ class Mover:
     def __init__(self, vk, group_id):
         self.vk = vk
         self.group_id = group_id
+
         self.albums = self.get_albums()
         self.id_albums_dict = self.make_id_albums_dict()
         self.select_album = self.get_sort_album()
+
         self.album_comments = self.load_album_comments()
 
         self.transfer_data = self.find_select_photo()
@@ -85,18 +87,19 @@ class Mover:
         not_moved_qty = 0
         move_status = False
 
+        # TODO Из-за изменения данных код ниже не работает
         for photo in self.transfer_data:
-            photo_title = photo['trans_album']
+            target_album = photo['album']
             try:
                 vk_response = self.vk.method('photos.move', {
                     'owner_id': self.group_id,
-                    'target_album_id': self.id_albums_dict[photo_title],
-                    'photo_id': photo['id']
+                    'target_album_id': self.id_albums_dict[target_album],
+                    'photo_id': photo['photo_id']
                 })
                 move_status = bool(vk_response)
             except KeyError:
                 logging.error('Не найден альбом с названием '
-                              '"{name}"'.format(name=photo_title))
+                              '"{name}"'.format(name=target_album))
             except vk_api.exceptions.ApiError:
                 logging.error('API VK ERROR')
 
