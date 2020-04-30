@@ -33,7 +33,7 @@ def vk_auth(login, password, token):
 
 def main():
     """Основная логика работы скрипта"""
-
+    import vk_api
     with open("config.json", "r", encoding="utf-8") as file:
         config = json.load(file)
 
@@ -48,7 +48,7 @@ def main():
     # logging.debug('Перенос завершен')
 
 
-if __name__ == '__main__':
-
-    main()
+# if __name__ == '__main__':
+main()
+input('Нажмиты любую клавишу, чтобы выйти...')
 

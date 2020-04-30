@@ -6,8 +6,7 @@ from vk_api.tools import VkTools
 
 def config_logger(logger):
     logger.setLevel(logging.DEBUG)
-    f_handler = logging.FileHandler(filename="photo transfer.log",
-                                    mode='w')
+    f_handler = logging.StreamHandler()
 
     formatter = logging.Formatter('%(asctime)s - %(filename)s - %(levelname)s - %(message)s')
     f_handler.setFormatter(formatter)
