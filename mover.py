@@ -32,7 +32,8 @@ class Mover:
         config_logger(self.logger)
 
         self.move()
-        self.creat_new_album()
+        self.new_album_id = self.creat_new_album()
+        self.move_photo_rules()
         
     def get_albums(self):
         """Отдает словарь со всеми альбомами группы"""
@@ -73,6 +74,14 @@ class Mover:
         return comments['items']
 
     def find_select_photo(self):
+        """Формирует данные для переноса
+        фотографии (лист словарей)
+        
+        В словарь входит айди фотографии
+        и название альбома для переноса,
+        который с помощью регулярки вычлиняется
+        из комментария.
+        """
         transfer_data = list()
         for com in self.album_comments:
             if com['from_id'] == self.group_id:
@@ -88,10 +97,10 @@ class Mover:
         not_moved_qty = 0
         move_status = False
 
-        # TODO Из-за изменения данных код ниже не работает
         for photo in self.transfer_data:
             target_album = photo['album']
             try:
+                # Метод переносит фотографию в нужный альбом
                 vk_response = self.vk.method('photos.move', {
                     'owner_id': self.group_id,
                     'target_album_id': self.id_albums_dict[target_album],
@@ -106,7 +115,7 @@ class Mover:
 
             if not move_status:
                 self.logger.error('Не найден альбом для переноса для фото id: '
-                                  'https://vk.com/photo{}_{}'.format(self.group_id, photo['id']))
+                                  'https://vk.com/photo{}_{}'.format(self.group_id, photo['photo_id']))
                 not_moved_qty += 1
             else:
                 moved_qty += 1
@@ -115,7 +124,9 @@ class Mover:
         self.logger.debug('Не перенесено фотографий: {} шт.'.format(not_moved_qty))
         
     def creat_new_album(self):
+        """Создает новый альбом для подписчиков"""
         now = dt.now()
+        # словарь с правильными названиеми месяцев для названия
         month_dict = {
             1: 'января',
             2: 'февраля',
@@ -134,10 +145,21 @@ class Mover:
         current_day: str = str(now.day)
         
         new_album_id = self.vk.method('photos.createAlbum', {
-            'title': 'Test', #.format(
-            #     day='1',
-            #     month=month_dict[current_month]),
-            'group_id': -15146996
+            'title': 'Прием работ подписчиков (от {day} {month})'.format(
+                day=current_day,
+                month=month_dict[current_month]),
+            'group_id': -self.group_id  # нужен минус, так как кусок старого АПИ видимо
         })
         
         self.logger.debug('Создан альбом: {}'.format(new_album_id['id']))
+        return new_album_id['id']
+        
+    def move_photo_rules(self):
+        """Переносит фото с правилами в новый альбом"""
+        photo_rules_id: int = 380094996  # https://vk.com/photo-24565142_380094996
+        
+        vk_response = self.vk.method('photos.move', {
+            'owner_id': self.group_id,
+            'target_album_id': self.new_album_id,
+            'photo_id': photo_rules_id
+        })
