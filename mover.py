@@ -2,6 +2,7 @@ import re
 import logging
 import vk_api.exceptions
 from vk_api.tools import VkTools
+from datetime import datetime as dt
 
 
 def config_logger(logger):
@@ -31,7 +32,8 @@ class Mover:
         config_logger(self.logger)
 
         self.move()
-
+        self.creat_new_album()
+        
     def get_albums(self):
         """Отдает словарь со всеми альбомами группы"""
         albums = self.vk.method('photos.getAlbums', {
@@ -111,4 +113,31 @@ class Mover:
 
         self.logger.debug('Перенесено фотографий: {} шт.'.format(moved_qty))
         self.logger.debug('Не перенесено фотографий: {} шт.'.format(not_moved_qty))
-
+        
+    def creat_new_album(self):
+        now = dt.now()
+        month_dict = {
+            1: 'января',
+            2: 'февраля',
+            3: 'марта',
+            4: 'апреля',
+            5: 'мая',
+            6: 'июня',
+            7: 'июля',
+            8: 'августа',
+            9: 'сентября',
+            10: 'Октября',
+            11: 'ноября',
+            12: 'декабря',
+        }
+        current_month: int = now.month
+        current_day: str = str(now.day)
+        
+        new_album_id = self.vk.method('photos.createAlbum', {
+            'title': 'Test', #.format(
+            #     day='1',
+            #     month=month_dict[current_month]),
+            'group_id': -15146996
+        })
+        
+        self.logger.debug('Создан альбом: {}'.format(new_album_id['id']))
