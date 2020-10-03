@@ -137,7 +137,7 @@ class Mover:
             7: 'июля',
             8: 'августа',
             9: 'сентября',
-            10: 'Октября',
+            10: 'октября',
             11: 'ноября',
             12: 'декабря',
         }
@@ -145,7 +145,7 @@ class Mover:
         current_day: str = str(now.day)
         
         new_album_id = self.vk.method('photos.createAlbum', {
-            'title': 'Прием работ подписчиков (от {day} {month})'.format(
+            'title': 'Приём работ подписчиков (от {day} {month})'.format(
                 day=current_day,
                 month=month_dict[current_month]),
             'group_id': -self.group_id  # нужен минус, так как кусок старого АПИ видимо
