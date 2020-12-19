@@ -122,6 +122,9 @@ class Mover:
 
         self.logger.debug('Перенесено фотографий: {} шт.'.format(moved_qty))
         self.logger.debug('Не перенесено фотографий: {} шт.'.format(not_moved_qty))
+        self.logger.debug('Список перенесенных фото: \n')
+        for photo in self.transfer_data:
+            print('https://vk.com/photo{}_{}\n'.format(self.group_id, photo['photo_id']))
         
     def creat_new_album(self):
         """Создает новый альбом для подписчиков"""
